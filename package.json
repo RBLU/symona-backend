@@ -1,0 +1,41 @@
+{
+  "name": "symona-backend",
+  "version": "1.0.0",
+  "description": "SYSYIS Monitoring Application for Business Users",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test --recursive --compilers js:babel-register --timeout 15000",
+    "start": "nodemon -w src/ src/app.js |pino"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RBLU/symona-backend.git"
+  },
+  "keywords": [
+    "SYMONA"
+  ],
+  "author": "Reto Blunschi <reto.blunschi@youpers.com> (http://www.youpers.com)",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/RBLU/symona-backend/issues"
+  },
+  "homepage": "https://github.com/RBLU/symona-backend#readme",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "dotenv": "^4.0.0",
+    "i": "^0.3.6",
+    "jwt-simple": "^0.5.1",
+    "knex": "^0.13.0",
+    "nconf": "^0.8.5",
+    "nodemon": "^1.12.1",
+    "oracledb": "^1.13.1",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "passport-http-bearer": "^1.0.1",
+    "pino": "^4.8.1",
+    "restify": "^6.2.3",
+    "restify-cors-middleware": "^1.0.1",
+    "restify-errors": "^5.0.0",
+    "restify-pino-logger": "^2.0.0"
+  }
+}

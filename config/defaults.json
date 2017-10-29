@@ -1,0 +1,43 @@
+{
+  "app": {
+    "name": "SYMONA Backend Service"
+  },
+  "session_timeout": 1200000,
+  "socket_loglevel": "2",
+  "version": "0.1.0",
+  "host": "localhost",
+  "port": "8080",
+  "webclientUrl": "http://localhost:3000",
+  "backendUrl": "http://localhost:8080",
+  "db": {
+    "user": "syba",
+    "password": "syba",
+    "connectString": "10.1.1.183/XE",
+    "poolAlias": "syba"
+  },
+  "linkTokenEncryption": {
+    "key": "50126a4a500219238cd678a383cdab197ed5fe42",
+    "algorithm": "aes256",
+    "maxTokenLifetime": 600000,
+    "separator": "|"
+  },
+  "user": {
+    "emailVerificationUrl": "/#/email_verification/",
+    "passwordResetUrl": "/#/password_reset/"
+  },
+  "email": {
+    "enabled": "enabled",
+    "fromString": "SYMONA <dontreply@youpers.com>",
+    "templatesDir": "src/mailtemplates",
+    "tracking": {
+      "enabled": "disabled"
+    },
+    "emailConfirmation": "disabled"
+  },
+  "accessTokenSecret": "knfad*ç%&/(&/sdkjfnaklsdnfASDFAS2341",
+  "log": {
+    "name": "Main",
+    "stdout": "debug"
+  }
+}
+
