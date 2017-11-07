@@ -1,5 +1,5 @@
 
 module.exports = {
-    table: 'Target',
+    table: 'InspectionDef',
     primaryKey: 'boid'
 };

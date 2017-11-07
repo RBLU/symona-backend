@@ -32,17 +32,10 @@ server.use(restify.plugins.bodyParser({mapParams: false}));
 server.use(passport.initialize());
 
 // adding all required routes
-
-function respond(req, res, next) {
-    res.send('hello ' + req.params.name);
-    req.log.info('answering request');
-    next();
-}
-
-server.get('/hello/:name', respond);
-server.head('/hello/:name', respond);
-
 handler.addRoute(server, require('./routes/monitoring'));
+handler.addRoute(server, require('./routes/target'));
+handler.addRoute(server, require('./routes/inspectiondef'));
+handler.addRoute(server, require('./routes/inspection'));
 
 server.listen(8080, function() {
   console.log('%s listening at %s', server.name, server.url);

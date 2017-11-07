@@ -10,10 +10,14 @@ function addRoute(server, route) {
 
                 const dbHandler = _.isFunction(route[method]) ? route[method] : knexHandler[method];
 
-                dbHandler(route.table, route.primaryKey, req.params, req.query)
+                dbHandler(route.table, route.primaryKey, req.params, req.query, req.body)
                     .then((result) => {
                         if (method === 'GETall') {
+                            // we expect an array of rows, just sending it
                             res.send(result);
+                        } else if (method === 'DELETE') {
+                            // we expect an integer, the number of objects deleted
+                            res.send({objectsDeleted: result});
                         } else {
                             if (result.length === 0) {
                                 return next(new errors.NotFoundError("no object found in table '" + route.table+ "' with "

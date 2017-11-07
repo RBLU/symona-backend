@@ -1,10 +1,11 @@
 const knex = require('./db');
+const uuidv4 = require('uuid/v4');
 
 
 module.exports = {
-    GET: function(table, primaryKey, params, query) {
+    GET: function(table, primaryKeyName, params, query, body) {
         const clause = {};
-        clause[primaryKey] = params[primaryKey];
+        clause[primaryKeyName] = params[primaryKeyName];
 
         return knex(table)
             .select()
@@ -16,13 +17,26 @@ module.exports = {
 
         // TODO: handle query string!!!
     },
-    PUT: function(table, primaryKey, params, query) {
+    PUT: function(table, primaryKeyName, params, query, body) {
 
     },
-    POST: function(table, primaryKey, params, query) {
+    POST: function(table, primaryKeyName, params, query, object) {
+
+        // post will generate new object, so we need a new boid:
+        object.boid = uuidv4();
         return knex(table)
-            .insert(params);
+            .insert(object)
+            .then((result) => {
+                return [object];
+            });
     },
-    DELETE: function(table, primaryKey, params, query) {},
-    PATCH: function(table, primaryKey, params, query) {},
+    DELETE: function(table, primaryKeyName, params, query, body) {
+        const clause = {};
+        clause[primaryKeyName] = params[primaryKeyName];
+
+        return knex(table)
+            .where(clause)
+            .delete();
+    },
+    PATCH: function(table, primaryKeyName, params, query, body) {},
 };
