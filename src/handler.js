@@ -33,7 +33,9 @@ function addRoute(server, route) {
                     })
                     .catch((err) => {
                         req.log.error(err);
-                        return next(err);
+                        // wrap error
+
+                        return next(new errors.BadRequestError(err));
                     });
             };
 

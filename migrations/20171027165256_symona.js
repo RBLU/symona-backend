@@ -60,7 +60,7 @@ exports.up = function (knex, Promise) {
         knex.schema.createTable('Run', function (table) {
             table.uuid('boid').primary();
             table.uuid('itsMonitoring')
-                .references('Monitoring.boid');
+                .references('Monitoring.boid').notNull();
             table.string('itsSyriusBatchlauf');
             table.string('runStatus');
             table.string('operatorStatus');
