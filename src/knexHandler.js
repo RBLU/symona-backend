@@ -55,6 +55,19 @@ function expand(knexQuery, table, attributesToExpand) {
         })
 }
 
+function filter(knexQuery, filterClause) {
+
+    const opMap = {
+      eq: '=',
+      lg: '>',
+      lge: '>=',
+      sm: '<',
+      sme: '<=',
+    };
+    const filterParts = filterClause.split('$');
+
+    return knexQuery.where(filterParts[0], opMap[filterParts[1]], filterParts[2]);
+}
 
 module.exports = {
     GET: function (table, primaryKeyName, params, query, body) {
@@ -72,19 +85,23 @@ module.exports = {
         }
     },
     GETall: function (table, primaryKeyName, params, query, body) {
-        const knexQuery = knex(table)
+        let knexQuery = knex(table)
             .select();
         pino.info('req.query', query);
         if (query.orderBy) {
-            pino.info('orderBy', query.orderBy.split('|'));
             knexQuery.orderBy(...query.orderBy.split('|'));
         }
 
-        if (query.expand) {
-            return expand(knexQuery, table, query.expand.split(','));
-        } else {
-            return knexQuery;
+        if (query.filter) {
+            knexQuery = filter(knexQuery, query.filter);
         }
+
+        if (query.expand) {
+            knexQuery =  expand(knexQuery, table, query.expand.split(','));
+        }
+
+        return knexQuery;
+
         // TODO: handle query string!!!
     },
     PUT: function (table, primaryKeyName, params, query, body) {
