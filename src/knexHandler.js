@@ -71,10 +71,15 @@ module.exports = {
             return knexQuery;
         }
     },
-    GETall: function (table) {
-        return knex(table)
+    GETall: function (table, primaryKeyName, params, query, body) {
+        const knexQuery = knex(table)
             .select();
 
+        if (query.expand) {
+            return expand(knexQuery, table, query.expand.split(','));
+        } else {
+            return knexQuery;
+        }
         // TODO: handle query string!!!
     },
     PUT: function (table, primaryKeyName, params, query, body) {

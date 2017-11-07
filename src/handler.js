@@ -23,7 +23,7 @@ function addRoute(server, route) {
                                 return next(new errors.NotFoundError("no object found in table '" + route.table+ "' with "
                                     + route.primaryKey + " = '" + req.params[route.primaryKey] + "'"));
                             } else if (result.length >1) {
-                                return next(new errors.ConflictError('more than 1 object found ('+ result.length+')with '
+                                return next(new errors.ConflictError('more than 1 object found ('+ result.length+') with '
                                     + route.primaryKey + " = '" + req.params[route.primaryKey] + "'"));
                             } else {
                                 res.send(result[0]);
