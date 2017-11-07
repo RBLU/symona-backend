@@ -64,8 +64,8 @@ exports.up = function (knex, Promise) {
             table.string('itsSyriusBatchlauf');
             table.string('runStatus');
             table.string('operatorStatus');
-            table.dateTime('started');
-            table.dateTime('ended');
+            table.dateTime('started').notNull();
+            table.dateTime('ended').notNull();
             table.boolean('ignored');
             table.uuid('ignoredComment')
                 .references('Comment.boid');

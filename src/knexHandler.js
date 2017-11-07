@@ -89,6 +89,7 @@ module.exports = {
 
         // post will generate new object, so we need a new boid:
         object.boid = uuidv4();
+        pino.info(object);
         return knex(table)
             .insert(object)
             .then((result) => {

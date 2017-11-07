@@ -4,6 +4,7 @@ const pino = require('restify-pino-logger')();
 const dotenv = require('dotenv').config();
 const db = require('./db');
 const passport = require('passport');
+const moment = require('moment');
 
 const config = require('../config/config');
 config.appRoot = __dirname; // required config
@@ -29,7 +30,15 @@ server.use(pino);
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({mapParams: false}));
 
-server.use(restify.plugins.bodyParser({mapParams: false}));
+function reviveDates(key, value){
+    if (moment(value, moment.ISO_8601).isValid()) {
+        return moment(value).toDate();
+    } else {
+        return value;
+    }
+}
+
+server.use(restify.plugins.bodyParser({mapParams: false, reviver: reviveDates}));
 server.use(passport.initialize());
 
 // adding all required routes
