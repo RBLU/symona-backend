@@ -8,7 +8,7 @@ exports.up = function (knex, Promise) {
             table.string('password');
             table.string('name');
             table.string('email');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Target', function (table) {
@@ -16,7 +16,7 @@ exports.up = function (knex, Promise) {
             table.string('title');
             table.string('type');
             table.string('itsSyriusBatch');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('InspectionDef', function (table) {
@@ -24,7 +24,7 @@ exports.up = function (knex, Promise) {
             table.string('title');
             table.string('proctype');
             table.string('procedure');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Monitoring', function (table) {
@@ -36,7 +36,7 @@ exports.up = function (knex, Promise) {
             table.date('fromDate');
             table.date('toDate');
             table.boolean('active');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Inspection', function (table) {
@@ -54,7 +54,7 @@ exports.up = function (knex, Promise) {
             table.string('name');
             table.string('description');
             table.boolean('active');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Run', function (table) {
@@ -69,7 +69,7 @@ exports.up = function (knex, Promise) {
             table.boolean('ignored');
             table.uuid('ignoredComment')
                 .references('Comment.boid');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Value', function (table) {
@@ -82,7 +82,7 @@ exports.up = function (knex, Promise) {
                 .references('Inspection.boid');
             table.float('value');
             table.string('status');
-            table.timestamps();
+            table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Comment', function (table) {
@@ -98,20 +98,20 @@ exports.up = function (knex, Promise) {
             table.string('text');
             table.string('oldStatus');
             table.string('newStatus');
-            table.timestamps();
+            table.timestamps(false, true);
         })
     ])
 };
 
 exports.down = function (knex, Promise) {
     return Promise.all([
-        knex.schema.dropTable('User'),
-        knex.schema.dropTable('Target'),
-        knex.schema.dropTable('InspectionDef'),
-        knex.schema.dropTable('Monitoring'),
-        knex.schema.dropTable('Inspection'),
+        knex.schema.dropTable('Comment'),
         knex.schema.dropTable('Run'),
         knex.schema.dropTable('Value'),
-        knex.schema.dropTable('Comment')
+        knex.schema.dropTable('Monitoring'),
+        knex.schema.dropTable('Inspection'),
+        knex.schema.dropTable('Target'),
+        knex.schema.dropTable('InspectionDef'),
+        knex.schema.dropTable('User')
     ]);
 };
