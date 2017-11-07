@@ -4,7 +4,15 @@ const inflect = require('i')();
 const errors = require('restify-errors');
 
 function addRoute(server, route) {
+    if (route.specialRoutes && route.specialRoutes.length > 0) {
+        route.specialRoutes.forEach((specialRoute) => {
+            server[methodMap[specialRoute.method]](specialRoute.endpoint, specialRoute.handler);
+        });
+    }
+
+
     ['GETall', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH'].forEach((method) => {
+
         if (route[method] !== false) {
             const handler = function (req, res, next) {
 
