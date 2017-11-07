@@ -74,6 +74,11 @@ module.exports = {
     GETall: function (table, primaryKeyName, params, query, body) {
         const knexQuery = knex(table)
             .select();
+        pino.info('req.query', query);
+        if (query.orderBy) {
+            pino.info('orderBy', query.orderBy.split('|'));
+            knexQuery.orderBy(...query.orderBy.split('|'));
+        }
 
         if (query.expand) {
             return expand(knexQuery, table, query.expand.split(','));
