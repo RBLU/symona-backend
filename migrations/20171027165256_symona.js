@@ -11,7 +11,7 @@ exports.up = function (knex, Promise) {
             table.timestamps();
         }),
 
-        knex.schema.createTable('MonitoringDef', function (table) {
+        knex.schema.createTable('Target', function (table) {
             table.uuid('boid').primary();
             table.string('title');
             table.string('type');
@@ -29,8 +29,8 @@ exports.up = function (knex, Promise) {
 
         knex.schema.createTable('Monitoring', function (table) {
             table.uuid('boid').primary();
-            table.uuid('itsMonitoringDef')
-                .references('MonitoringDef.boid');
+            table.uuid('itsTarget')
+                .references('Target.boid');
             table.string('name');
             table.string('description');
             table.date('fromDate');
@@ -106,7 +106,7 @@ exports.up = function (knex, Promise) {
 exports.down = function (knex, Promise) {
     return Promise.all([
         knex.schema.dropTable('User'),
-        knex.schema.dropTable('MonitoringDef'),
+        knex.schema.dropTable('Target'),
         knex.schema.dropTable('InspectionDef'),
         knex.schema.dropTable('Monitoring'),
         knex.schema.dropTable('Inspection'),
