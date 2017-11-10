@@ -58,15 +58,22 @@ function expand(knexQuery, table, attributesToExpand) {
 function filter(knexQuery, filterClause) {
 
     const opMap = {
-      eq: '=',
-      lg: '>',
-      lge: '>=',
-      sm: '<',
-      sme: '<=',
+        eq: '=',
+        lt: '>',
+        lte: '>=',
+        st: '<',
+        ste: '<=',
+        like: ' LIKE '
     };
-    const filterParts = filterClause.split('$');
-
-    return knexQuery.where(filterParts[0], opMap[filterParts[1]], filterParts[2]);
+    const filterParts = filterClause.split(':');
+    const wrappedColumn = filterParts[0].split('.').map((v)=> "\"" + v + "\"").reduce((res, current) => res + '.' + current , '').substr(1);
+    if (filterParts[1] === 'likei') {
+        return knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ", filterParts[2])
+    } else if (filterParts[1] === 'eqi' ) {
+        return knexQuery.whereRaw("LOWER(" + wrappedColumn + ") = LOWER(?)", filterParts[2])
+    } else {
+        return knexQuery.where(filterParts[0], opMap[filterParts[1]], filterParts[2]);
+    }
 }
 
 module.exports = {
@@ -97,7 +104,7 @@ module.exports = {
         }
 
         if (query.expand) {
-            knexQuery =  expand(knexQuery, table, query.expand.split(','));
+            knexQuery = expand(knexQuery, table, query.expand.split(','));
         }
 
         return knexQuery;

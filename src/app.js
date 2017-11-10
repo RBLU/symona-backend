@@ -38,6 +38,12 @@ function reviveDates(key, value){
     }
 }
 
+
+server.on('uncaughtException', function (req, res, err, cb) {
+    req.log.error(err);
+    return cb();
+});
+
 server.use(restify.plugins.bodyParser({mapParams: false, reviver: reviveDates}));
 server.use(passport.initialize());
 

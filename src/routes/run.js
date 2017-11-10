@@ -1,4 +1,6 @@
 const knex = require('../db');
+const errors = require('restify-errors');
+
 
 module.exports = {
     table: 'Run',
@@ -8,15 +10,20 @@ module.exports = {
             method: 'GET',
             endpoint: '/runs/monitoringnames',
             handler: (req, res, next) => {
-                   knex('Run')
-                       .join('Monitoring', 'Run.itsMonitoring', '=', 'Monitoring.boid')
-                       .select('Monitoring.name')
-                       .distinct()
-                       .where('Monitoring.name', 'like', '%' +req.query.filter + '%')
-                       .then((rows) => {
-                           res.send(rows.map((row) => row.name));
-                           return next();
-                       })
+                req.log.info(req.query, 'req.query');
+                knex('Run')
+                    .join('Monitoring', 'Run.itsMonitoring', '=', 'Monitoring.boid')
+                    .select('Monitoring.name')
+                    .whereRaw("LOWER(??) LIKE '%' || LOWER(?) || '%' ", ['Monitoring.name',req.query.filter])
+                    .distinct()
+                    .then((rows) => {
+                        res.send(rows.map((row) => row.name));
+                        return next();
+                    })
+                    .catch((err) => {
+                        req.log.error(err);
+                        return next(new errors.BadRequestError(err));
+                    })
             }
         }
     ]

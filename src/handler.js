@@ -51,11 +51,11 @@ function addRoute(server, route) {
 
             if (!endpoint) {
                 endpoint = '/' + inflect.pluralize(route.table).toLowerCase();
-                if (method === 'GET' || method === 'PUT' || method === 'DELETE') {
+                if (method === 'GET' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
                     endpoint += '/:' + route.primaryKey;
                 }
             }
-            console.log('adding route for: ' + endpoint + ', method: ' + methodMap[method]);
+            console.log('adding route for: ' + endpoint + ', method: ' + method);
             server[methodMap[method]](endpoint, handler);
         }
     });
