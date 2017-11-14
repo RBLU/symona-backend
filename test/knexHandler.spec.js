@@ -94,17 +94,6 @@ describe("knexHandler", function () {
                         res[0].itsTestUser.should.be.a('string');
                     });
             });
-
-            it("returns expanded element for existing boid", function () {
-                return knexHandler.GET(tablenameProfile, 'boid', {boid: newBoidProfile}, {expand: 'itsTestUser'})
-                    .then((res) => {
-                        res.should.have.length(1);
-                        res[0].should.have.property('testUser');
-                        res[0].testUser.should.have.property('age');
-                        res[0].itsTestUser.should.be.a('string');
-                    });
-            });
-
         });
 
     });
@@ -117,6 +106,7 @@ describe("knexHandler", function () {
         const newProfileBoid1 = uuid();
         const newProilfeBoid2 = uuid();
         const newProfileBoid3 = uuid();
+        const newProfileBoid4 = uuid();
 
 
         before(() => {
@@ -278,11 +268,24 @@ describe("knexHandler", function () {
                 return knexHandler.GETall(tablenameProfile, 'boid', {}, {expand: 'itsTestUser', orderBy: 'city'})
                     .then((result) => {
                         result.should.have.length(3);
-                        result[0].should.have.property('testUser')
+                        result[0].should.have.property('testUser');
+                        result[1].should.have.property('testUser');
+                        result[0].testUser.should.have.property('age');
+                        result[1].testUser.should.have.property('age');
+                        result[2].should.not.have.property('testUser');
+                    });
+            });
+
+            it('should filter on expanded attributes', ()=> {
+                return knexHandler.GETall(tablenameProfile, 'boid', {}, {expand: 'itsTestUser', orderBy: 'city', filter: 'age:>:1'})
+                    .then((result) => {
+                        result.should.have.length(1);
+                        result[0].should.have.property('testUser');
+                        result[0].testUser.should.have.property('age');
+                        result[0].testUser.age.should.be.greaterThan(1);
                     });
             });
         });
-
 
         describe('combined options', () => {
             it('should handle orderBy and filter at the same time', () => {
