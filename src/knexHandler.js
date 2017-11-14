@@ -6,6 +6,7 @@ const Treeize = require('treeize');
 
 const columnInfoCache = {};
 
+
 function prefixedColumnsSelector(table, usePrefix) {
 
     if (!columnInfoCache[table]) {
@@ -15,7 +16,7 @@ function prefixedColumnsSelector(table, usePrefix) {
 
     let prefix = '';
     if (usePrefix) {
-        prefix = table.toLowerCase() + ':';
+        prefix = lowerFirst(table) + ':';
     }
     return columnInfoCache[table]
         .then((result) => {
@@ -44,7 +45,7 @@ function expand(knexQuery, table, attributesToExpand) {
             attributesToExpand.forEach((itsAttr) => {
                 const joinTable = itsAttr.substr(3);
                 knexQuery
-                    .join(joinTable, table + '.' + itsAttr, joinTable + '.boid')
+                    .leftJoin(joinTable, table + '.' + itsAttr, joinTable + '.boid')
             });
             return knexQuery
                 .columns(colSelector)
@@ -134,7 +135,6 @@ module.exports = {
             knexQuery.offset(query.offset);
         }
 
-        pino.debug(knexQuery.toSQL(), 'GETall: the query');
         return knexQuery;
     },
     PUT: function (table, primaryKeyName, params, query, body) {
@@ -162,3 +162,8 @@ module.exports = {
     PATCH: function (table, primaryKeyName, params, query, body) {
     },
 };
+
+
+function lowerFirst(string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+}

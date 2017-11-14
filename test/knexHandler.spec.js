@@ -56,17 +56,19 @@ describe("knexHandler", function () {
                 email: 'john@doe.com',
                 name: 'John Doe',
                 age: 3
-            }).then(()=> {
-             return knex(tablenameProfile).insert({
-                 boid: newBoidProfile,
-                 itsTestUser: newBoid,
-                 city: 'Züri'
-             });
+            }).then(() => {
+                return knex(tablenameProfile).insert({
+                    boid: newBoidProfile,
+                    itsTestUser: newBoid,
+                    city: 'Züri'
+                });
             })
         });
 
         after(() => {
-            return knex(tablenameProfile).delete().then(()=> {return knex(tablenameUser).delete()});
+            return knex(tablenameProfile).delete().then(() => {
+                return knex(tablenameUser).delete()
+            });
         });
 
         it("returns empty array for inexisting boid", function () {
@@ -82,23 +84,23 @@ describe("knexHandler", function () {
                 .then((result) => result[0].boid).should.eventually.equal(newBoid);
         });
 
-        describe('expand', ()=> {
+        describe('expand', () => {
             it("returns expanded element for existing boid", function () {
                 return knexHandler.GET(tablenameProfile, 'boid', {boid: newBoidProfile}, {expand: 'itsTestUser'})
-                    .then((res)=> {
+                    .then((res) => {
                         res.should.have.length(1);
-                        res[0].should.have.property('testuser');
-                        res[0].testuser.should.have.property('age');
+                        res[0].should.have.property('testUser');
+                        res[0].testUser.should.have.property('age');
                         res[0].itsTestUser.should.be.a('string');
                     });
             });
 
             it("returns expanded element for existing boid", function () {
                 return knexHandler.GET(tablenameProfile, 'boid', {boid: newBoidProfile}, {expand: 'itsTestUser'})
-                    .then((res)=> {
+                    .then((res) => {
                         res.should.have.length(1);
-                        res[0].should.have.property('testuser');
-                        res[0].testuser.should.have.property('age');
+                        res[0].should.have.property('testUser');
+                        res[0].testUser.should.have.property('age');
                         res[0].itsTestUser.should.be.a('string');
                     });
             });
@@ -112,6 +114,9 @@ describe("knexHandler", function () {
         const newBoid2 = uuid();
         const newBoid3 = uuid();
         const newBoid4 = uuid();
+        const newProfileBoid1 = uuid();
+        const newProilfeBoid2 = uuid();
+        const newProfileBoid3 = uuid();
 
 
         before(() => {
@@ -146,7 +151,21 @@ describe("knexHandler", function () {
                     name: 'Param Administrator',
                     age: 3
                 }
-            ])
+            ]).then(()=> {
+                return knex(tablenameProfile).insert([
+                    {
+                        boid: newProfileBoid1,
+                        itsTestUser: newBoid1,
+                        city: 'Aathal'
+                    }, {
+                        boid: newProilfeBoid2,
+                        itsTestUser: newBoid2,
+                        city: 'Basel'
+                    }, {
+                        boid: newProfileBoid3,
+                        city: 'Chamonix'
+                    }]);
+            })
         });
 
         after(() => {
@@ -250,6 +269,16 @@ describe("knexHandler", function () {
                     .then((result) => {
                         result.should.have.length(1);
                         result.map((ob) => ob.age).should.have.ordered.members([3]);
+                    });
+            });
+        });
+
+        describe('expand for lists', () => {
+            it('should expand a list of results', ()=> {
+                return knexHandler.GETall(tablenameProfile, 'boid', {}, {expand: 'itsTestUser', orderBy: 'city'})
+                    .then((result) => {
+                        result.should.have.length(3);
+                        result[0].should.have.property('testUser')
                     });
             });
         });
