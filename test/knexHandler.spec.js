@@ -1,5 +1,5 @@
-var chai = require("chai");
-var chaiAsPromised = require("chai-as-promised");
+const chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
 
 chai.use(chaiAsPromised);
 //const expect  = chai.expect;
@@ -106,7 +106,6 @@ describe("knexHandler", function () {
         const newProfileBoid1 = uuid();
         const newProilfeBoid2 = uuid();
         const newProfileBoid3 = uuid();
-        const newProfileBoid4 = uuid();
 
 
         before(() => {
@@ -141,7 +140,7 @@ describe("knexHandler", function () {
                     name: 'Param Administrator',
                     age: 3
                 }
-            ]).then(()=> {
+            ]).then(() => {
                 return knex(tablenameProfile).insert([
                     {
                         boid: newProfileBoid1,
@@ -264,7 +263,7 @@ describe("knexHandler", function () {
         });
 
         describe('expand for lists', () => {
-            it('should expand a list of results', ()=> {
+            it('should expand a list of results', () => {
                 return knexHandler.GETall(tablenameProfile, 'boid', {}, {expand: 'itsTestUser', orderBy: 'city'})
                     .then((result) => {
                         result.should.have.length(3);
@@ -276,8 +275,12 @@ describe("knexHandler", function () {
                     });
             });
 
-            it('should filter on expanded attributes', ()=> {
-                return knexHandler.GETall(tablenameProfile, 'boid', {}, {expand: 'itsTestUser', orderBy: 'city', filter: 'age:>:1'})
+            it('should filter on expanded attributes', () => {
+                return knexHandler.GETall(tablenameProfile, 'boid', {}, {
+                    expand: 'itsTestUser',
+                    orderBy: 'city',
+                    filter: 'age:>:1'
+                })
                     .then((result) => {
                         result.should.have.length(1);
                         result[0].should.have.property('testUser');
@@ -302,15 +305,11 @@ describe("knexHandler", function () {
                     filter: 'age:>=:2',
                     limit: 1,
                     offset: 1
-                })
-                    .then((result) => {
-                        result.should.have.length(1);
-                        result.map((ob) => ob.age).should.have.ordered.members([3]);
-                    });
+                }).then((result) => {
+                    result.should.have.length(1);
+                    result.map((ob) => ob.age).should.have.ordered.members([3]);
+                });
             });
         });
-
     });
-
-
 });
