@@ -11,19 +11,19 @@ function addRoute(server, route) {
     }
 
 
-    ['GETall', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH'].forEach((method) => {
+    ['GETall', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH'].forEach((methodName) => {
 
-        if (route[method] !== false) {
+        if (route[methodName] !== false) {
             const handler = function (req, res, next) {
 
-                const dbHandler = _.isFunction(route[method]) ? route[method] : knexHandler[method];
+                const dbHandler = _.isFunction(route[methodName]) ? route[methodName] : knexHandler[methodName];
 
                 dbHandler(route.table, route.primaryKey, req.params, req.query, req.body)
                     .then((result) => {
-                        if (method === 'GETall') {
+                        if (methodName === 'GETall') {
                             // we expect an array of rows, just sending it
                             res.send(result);
-                        } else if (method === 'DELETE') {
+                        } else if (methodName === 'DELETE') {
                             // we expect an integer, the number of objects deleted
                             res.send({objectsDeleted: result});
                         } else {
@@ -51,12 +51,12 @@ function addRoute(server, route) {
 
             if (!endpoint) {
                 endpoint = '/' + inflect.pluralize(route.table).toLowerCase();
-                if (method === 'GET' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
+                if (methodName === 'GET' || methodName === 'PUT' || methodName === 'DELETE' || methodName === 'PATCH') {
                     endpoint += '/:' + route.primaryKey;
                 }
             }
-            console.log('adding route for: ' + endpoint + ', method: ' + method);
-            server[methodMap[method]](endpoint, handler);
+            console.log('adding route for: ' + endpoint + ', method: ' + methodName);
+            server[methodMap[methodName]](endpoint, handler);
         }
     });
 }
