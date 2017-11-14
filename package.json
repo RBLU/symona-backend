@@ -4,7 +4,7 @@
   "description": "SYSYIS Monitoring Application for Business Users",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test --recursive --compilers js:babel-register --timeout 15000",
+    "test": "NODE_ENV=unittest mocha test --recursive -w  --reporter spec",
     "start": "nodemon -w src/ src/app.js |pino"
   },
   "repository": {
@@ -40,5 +40,10 @@
     "restify-pino-logger": "^2.0.0",
     "treeize": "^2.1.2",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^4.0.1"
   }
 }

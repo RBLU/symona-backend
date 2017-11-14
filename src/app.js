@@ -2,12 +2,16 @@ const corsMiddleware = require('restify-cors-middleware');
 const restify = require('restify');
 const pino = require('restify-pino-logger')();
 const dotenv = require('dotenv').config();
-const db = require('./db');
 const passport = require('passport');
 const moment = require('moment');
 
 const config = require('../config/config');
 config.appRoot = __dirname; // required config
+const db = require('./db');
+
+db.migrate.latest([config]);
+
+
 const auth = require('./auth').handlers(config);
 auth.setupPassport(passport);
 

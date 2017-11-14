@@ -55,25 +55,44 @@ function expand(knexQuery, table, attributesToExpand) {
         })
 }
 
-function filter(knexQuery, filterClause) {
+function filter(knexQuery, filterstring) {
 
     const opMap = {
         eq: '=',
-        lt: '>',
-        lte: '>=',
+        gt: '>',
+        gte: '>=',
         st: '<',
         ste: '<=',
-        like: ' LIKE '
+        like: 'LIKE',
+        likei: 'LIKE',
+        eqi: '=',
+        '>': '>',
+        '<': '<',
+        '<=': '<=',
+        '>=': '>='
     };
-    const filterParts = filterClause.split(':');
-    const wrappedColumn = filterParts[0].split('.').map((v)=> "\"" + v + "\"").reduce((res, current) => res + '.' + current , '').substr(1);
-    if (filterParts[1] === 'likei') {
-        return knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ", filterParts[2])
-    } else if (filterParts[1] === 'eqi' ) {
-        return knexQuery.whereRaw("LOWER(" + wrappedColumn + ") = LOWER(?)", filterParts[2])
-    } else {
-        return knexQuery.where(filterParts[0], opMap[filterParts[1]], filterParts[2]);
-    }
+
+    const filterClauseArray = Array.isArray(filterstring) ? filterstring : [filterstring];
+
+    filterClauseArray.forEach((filterClause) => {
+
+        const filterParts = filterClause.split(':');
+        if (!opMap[filterParts[1]]) {
+            throw new Error('Unknown filter operator: ' + filterParts[1]);
+        }
+        const wrappedColumn = filterParts[0].split('.').map((v) => "\"" + v + "\"").reduce((res, current) => res + '.' + current, '').substr(1);
+        if (filterParts[1] === 'likei') {
+            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ", filterParts[2])
+        } else if (filterParts[1] === 'eqi') {
+            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") = LOWER(?)", filterParts[2])
+        } else if (filterParts[1] === 'like') {
+            knexQuery.where(filterParts[0], opMap[filterParts[1]], '%' + filterParts[2] + '%');
+        } else {
+            knexQuery.where(filterParts[0], opMap[filterParts[1]], filterParts[2]);
+        }
+    });
+    return knexQuery;
+
 }
 
 module.exports = {
@@ -85,7 +104,7 @@ module.exports = {
             .select()
             .where(clause);
 
-        if (query.expand) {
+        if (query && query.expand) {
             return expand(knexQuery, table, query.expand.split(','));
         } else {
             return knexQuery;
@@ -94,22 +113,19 @@ module.exports = {
     GETall: function (table, primaryKeyName, params, query, body) {
         let knexQuery = knex(table)
             .select();
-        pino.info('req.query', query);
-        if (query.orderBy) {
+        if (query && query.orderBy) {
             knexQuery.orderBy(...query.orderBy.split('|'));
         }
 
-        if (query.filter) {
+        if (query && query.filter) {
             knexQuery = filter(knexQuery, query.filter);
         }
 
-        if (query.expand) {
+        if (query && query.expand) {
             knexQuery = expand(knexQuery, table, query.expand.split(','));
         }
-
+        pino.debug(knexQuery.toSQL(), 'GETall: the query');
         return knexQuery;
-
-        // TODO: handle query string!!!
     },
     PUT: function (table, primaryKeyName, params, query, body) {
 
