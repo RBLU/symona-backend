@@ -9,7 +9,8 @@ const columnInfoCache = {};
 function prefixedColumnsSelector(table, usePrefix) {
 
     if (!columnInfoCache[table]) {
-        columnInfoCache[table] = knex(table).columnInfo(table);
+        pino.debug('************* cache MISS ***********: '+ table);
+        columnInfoCache[table] = knex(table).columnInfo(table).then((res) => {return res;});
     }
 
     let prefix = '';
@@ -38,7 +39,7 @@ function expand(knexQuery, table, attributesToExpand) {
         })))
         .then((columns) => {
             const colSelector = Object.assign(...columns);
-            pino.info('colSelector', colSelector);
+            pino.debug('colSelector', colSelector);
 
             attributesToExpand.forEach((itsAttr) => {
                 const joinTable = itsAttr.substr(3);
