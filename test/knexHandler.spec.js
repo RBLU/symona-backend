@@ -32,7 +32,7 @@ describe("knexHandler", function () {
         const newBoid = uuid();
 
 
-        beforeEach(() => {
+        before(() => {
 
             return knex(tablename).insert({
                 boid: newBoid,
@@ -43,7 +43,7 @@ describe("knexHandler", function () {
             })
         });
 
-        afterEach(() => {
+        after(() => {
             return knex(tablename).truncate();
         });
 
@@ -69,7 +69,7 @@ describe("knexHandler", function () {
         const newBoid4 = uuid();
 
 
-        beforeEach(() => {
+        before(() => {
 
             return knex(tablename).insert([
                 {
@@ -92,19 +92,19 @@ describe("knexHandler", function () {
                     password: 'symona',
                     email: 'amdmin@firma.com',
                     name: 'Super Administrator',
-                    age: 3
+                    age: 4
                 }, {
                     boid: newBoid4,
                     username: 'param',
                     password: 'symona',
                     email: 'param@firma.com',
                     name: 'Param Administrator',
-                    age: 4
+                    age: 3
                 }
             ])
         });
 
-        afterEach(() => {
+        after(() => {
             return knex(tablename).truncate();
         });
 
@@ -156,6 +156,77 @@ describe("knexHandler", function () {
             });
 
         });
+
+        describe('orderby', () => {
+            it('should order by a defined attribute ASC', () => {
+                return knexHandler.GETall(tablename, 'boid', {}, {orderBy: 'age|ASC'})
+                    .then((result) => {
+                        result.should.have.length(4);
+                        result.map((ob) => ob.age).should.have.ordered.members([1, 2, 3, 4]);
+                    })
+            });
+
+            it('should order by a defined attribute DESC', () => {
+                return knexHandler.GETall(tablename, 'boid', {}, {orderBy: 'age|DESC'})
+                    .then((result) => {
+                        result.should.have.length(4);
+                        result.map((ob) => ob.age).should.have.ordered.members([4, 3, 2, 1]);
+                    })
+            });
+
+
+            it('should order by a default ASC', () => {
+                return knexHandler.GETall(tablename, 'boid', {}, {orderBy: 'age'})
+                    .then((result) => {
+                        result.should.have.length(4);
+                        result.map((ob) => ob.age).should.have.ordered.members([1, 2, 3, 4]);
+                    })
+            });
+
+        });
+
+        describe('limit and offset', ()=> {
+            it('should limit to 2 results', ()=> {
+                return knexHandler.GETall(tablename, 'boid', {}, {limit: 2})
+                    .should.eventually.have.length(2);
+            });
+
+            it('should skip the first to results', ()=> {
+                return knexHandler.GETall(tablename, 'boid', {}, {offset: 2, orderBy: 'age'})
+                    .then((result) => {
+                        result.should.have.length(2);
+                        result.map((ob) => ob.age).should.have.ordered.members([ 3, 4]);
+                    });
+            });
+
+            it('should skip the first to results and limit to 1 result', ()=> {
+                return knexHandler.GETall(tablename, 'boid', {}, {offset: 2, orderBy: 'age', limit: 1})
+                    .then((result) => {
+                        result.should.have.length(1);
+                        result.map((ob) => ob.age).should.have.ordered.members([ 3]);
+                    });
+            });
+        });
+
+
+        describe('combined options', ()=> {
+            it('should handle orderBy and filter at the same time', ()=> {
+                return knexHandler.GETall(tablename, 'boid', {}, {orderBy: 'age', filter: 'age:>=:2'})
+                    .then((result) => {
+                        result.should.have.length(3);
+                        result.map((ob) => ob.age).should.have.ordered.members([ 2, 3, 4]);
+                    });
+            });
+
+            it('should handle orderBy, filter, limit and offset at the same time', ()=> {
+                return knexHandler.GETall(tablename, 'boid', {}, {orderBy: 'age', filter: 'age:>=:2', limit: 1, offset: 1})
+                    .then((result) => {
+                        result.should.have.length(1);
+                        result.map((ob) => ob.age).should.have.ordered.members([ 3]);
+                    });
+            });
+        });
+
     });
 
 

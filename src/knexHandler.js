@@ -113,6 +113,7 @@ module.exports = {
     GETall: function (table, primaryKeyName, params, query, body) {
         let knexQuery = knex(table)
             .select();
+
         if (query && query.orderBy) {
             knexQuery.orderBy(...query.orderBy.split('|'));
         }
@@ -124,6 +125,14 @@ module.exports = {
         if (query && query.expand) {
             knexQuery = expand(knexQuery, table, query.expand.split(','));
         }
+
+        if (query && query.limit) {
+            knexQuery.limit(query.limit);
+        }
+        if (query && query.offset) {
+            knexQuery.offset(query.offset);
+        }
+
         pino.debug(knexQuery.toSQL(), 'GETall: the query');
         return knexQuery;
     },
