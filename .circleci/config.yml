@@ -10,10 +10,10 @@ jobs:
       # specify the version you desire here
       - image: circleci/node:8.9.1
         environment:
-          OCI_HOME: /home/circleci/.oracle/instantclient
-          OCI_LIB_DIR: /home/circleci/.oracle/instantclient
-          OCI_INC_DIR: /home/circleci/.oracle/instantclient/sdk/include
-          OCI_INCLUDE_DIR: /home/circleci/.oracle/instantclient/sdk/include
+          OCI_HOME: /home/circleci/repo/.oracle/instantclient
+          OCI_LIB_DIR: /home/circleci/repo/.oracle/instantclient
+          OCI_INC_DIR: /home/circleci/repo/.oracle/instantclient/sdk/include
+          OCI_INCLUDE_DIR: /home/circleci/repo/.oracle/instantclient/sdk/include
       - image: wnameless/oracle-xe-11g
 
 
@@ -34,7 +34,7 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-      - run: echo 'export LD_LIBRARY_PATH=/home/circleci/.oracle/instantclient:$LD_LIBRARY_PATH' >> $BASH_ENV
+      - run: echo 'export LD_LIBRARY_PATH=/home/circleci/repo/.oracle/instantclient:$LD_LIBRARY_PATH' >> $BASH_ENV
       - run:
           command: scripts/node-oracledb-prepare.sh
       - run:
