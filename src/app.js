@@ -25,7 +25,7 @@ const cors = corsMiddleware({
     exposeHeaders: ['API-Token-Expiry']
 });
 
-const server = restify.createServer();
+const server = restify.createServer({name: 'SYMONA Backend'});
 
 server.pre(cors.preflight);
 
