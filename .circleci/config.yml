@@ -17,6 +17,12 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:3.4.4
 
+    environment:
+      - OCI_HOME: /home/ubuntu/.oracle/instantclient
+      - OCI_LIB_DIR: $OCI_HOME
+      - OCI_INC_DIR: $OCI_HOME/sdk/include
+      - OCI_INCLUDE_DIR: $OCI_HOME/sdk/include
+      - LD_LIBRARY_PATH: $OCI_HOME:$LD_LIBRARY_PATH
     working_directory: ~/repo
 
     steps:
@@ -36,6 +42,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+            - .oracle
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
