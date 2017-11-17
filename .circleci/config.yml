@@ -11,10 +11,10 @@ jobs:
       - image: circleci/node:8.9.1
         environment:
           OCI_HOME: /home/circleci/.oracle/instantclient
-          OCI_LIB_DIR: $OCI_HOME
-          OCI_INC_DIR: $OCI_HOME/sdk/include
-          OCI_INCLUDE_DIR: $OCI_HOME/sdk/include
-          LD_LIBRARY_PATH: $OCI_HOME:$LD_LIBRARY_PATH
+          OCI_LIB_DIR: /home/circleci/.oracle/instantclient
+          OCI_INC_DIR: /home/circleci/.oracle/instantclient/sdk/include
+          OCI_INCLUDE_DIR: /home/circleci/.oracle/instantclient/sdk/include
+          LD_LIBRARY_PATH: /home/circleci/.oracle/instantclient:$LD_LIBRARY_PATH
       - image: wnameless/oracle-xe-11g
 
 
