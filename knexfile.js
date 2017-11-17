@@ -19,9 +19,9 @@ module.exports = {
     ci: {
         client: 'oracledb',
         connection: {
-            user          : "sybatest",
-            password      : "sybatest",
-            connectString : '10.1.1.183/XE'
+            user          : "system",
+            password      : "oracle",
+            connectString : 'localhost/XE'
         }
     }
 
