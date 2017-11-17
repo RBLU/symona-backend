@@ -310,6 +310,16 @@ describe("knexHandler", function () {
                     result.map((ob) => ob.age).should.have.ordered.members([3]);
                 });
             });
+
+            it('should orderBy by expanded attribute', () => {
+                return knexHandler.GETall(tablenameProfile, 'boid', {}, {
+                    orderBy: 'TestUser.age|DESC',
+                    expand: 'itsTestUser'
+                }).then((result) => {
+                    result.should.have.length(3);
+                    result.map((ob) => ob.testUser && ob.testUser.age).should.have.ordered.members([undefined, 2,1]);
+                });
+            });
         });
     });
 });
