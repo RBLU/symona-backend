@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=unittest mocha test --recursive -w  --color --reporter spec |pino",
-    "citest": "NODE_ENV=ci mocha test --recursive -w  --color --reporter spec |pino",
+    "citest": "NODE_ENV=ci mocha test --recursive  --color --reporter spec |pino",
     "start": "nodemon -w src/ src/app.js |pino"
   },
   "repository": {
