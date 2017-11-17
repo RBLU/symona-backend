@@ -15,6 +15,14 @@ module.exports = {
             password      : "sybatest",
             connectString : '10.1.1.183/XE'
         }
-//        pool: { min: 1, max: 1 }
+    },
+    ci: {
+        client: 'oracledb',
+        connection: {
+            user          : "sybatest",
+            password      : "sybatest",
+            connectString : '10.1.1.183/XE'
+        }
     }
+
 };
