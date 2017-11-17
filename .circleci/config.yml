@@ -14,7 +14,7 @@ jobs:
           OCI_LIB_DIR: /home/circleci/.oracle/instantclient
           OCI_INC_DIR: /home/circleci/.oracle/instantclient/sdk/include
           OCI_INCLUDE_DIR: /home/circleci/.oracle/instantclient/sdk/include
-          LD_LIBRARY_PATH: /home/circleci/.oracle/instantclient:$LD_LIBRARY_PATH
+          LD_LIBRARY_PATH: /home/circleci/.oracle/instantclient
       - image: wnameless/oracle-xe-11g
 
 
