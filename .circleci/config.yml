@@ -37,6 +37,8 @@ jobs:
       - run: echo 'export LD_LIBRARY_PATH=/home/circleci/.oracle/instantclient:$LD_LIBRARY_PATH' >> $BASH_ENV
       - run:
           command: scripts/node-oracledb-prepare.sh
+      - run:
+          command: sudo apt-get install libaio1
       - run: npm install
 
       - save_cache:
