@@ -1,9 +1,11 @@
+const moment = require('moment');
+
 const knex = require('./db');
 const uuidv4 = require('uuid/v4');
 const pino = require('pino')();
 const Treeize = require('treeize');
 
-
+const QUERY_SEPARATOR = '|';
 const columnInfoCache = {};
 
 
@@ -78,23 +80,32 @@ function filter(knexQuery, filterstring) {
 
     filterClauseArray.forEach((filterClause) => {
 
-        const filterParts = filterClause.split(':');
+        const filterParts = filterClause.split(QUERY_SEPARATOR);
+        const filterArgument = reviveFilterArgument(filterParts[2]);
+
         if (!opMap[filterParts[1]]) {
             throw new Error('Unknown filter operator: ' + filterParts[1]);
         }
         const wrappedColumn = filterParts[0].split('.').map((v) => "\"" + v + "\"").reduce((res, current) => res + '.' + current, '').substr(1);
         if (filterParts[1] === 'likei') {
-            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ", filterParts[2])
+            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ",filterArgument)
         } else if (filterParts[1] === 'eqi') {
-            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") = LOWER(?)", filterParts[2])
+            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") = LOWER(?)", filterArgument)
         } else if (filterParts[1] === 'like') {
-            knexQuery.where(filterParts[0], opMap[filterParts[1]], '%' + filterParts[2] + '%');
+            knexQuery.where(filterParts[0], opMap[filterParts[1]], '%' + filterArgument + '%');
         } else {
-            knexQuery.where(filterParts[0], opMap[filterParts[1]], filterParts[2]);
+            knexQuery.where(filterParts[0], opMap[filterParts[1]], filterArgument);
         }
     });
     return knexQuery;
+}
 
+function reviveFilterArgument(value) {
+    if (moment(value, moment.ISO_8601).isValid()) {
+        return moment(value).toDate();
+    } else {
+        return value;
+    }
 }
 
 module.exports = {
@@ -117,7 +128,7 @@ module.exports = {
             .select();
 
         if (query && query.orderBy) {
-            knexQuery.orderBy(...query.orderBy.split('|'));
+            knexQuery.orderBy(...query.orderBy.split(QUERY_SEPARATOR));
         }
 
         if (query && query.filter) {
