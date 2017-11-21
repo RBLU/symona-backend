@@ -3,7 +3,7 @@ exports.up = function (knex, Promise) {
     return Promise.all([
 
         knex.schema.createTable('User', function (table) {
-            table.uuid('boid').primary();
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
             table.string('username');
             table.string('password');
             table.string('name');
@@ -12,7 +12,7 @@ exports.up = function (knex, Promise) {
         }),
 
         knex.schema.createTable('Target', function (table) {
-            table.uuid('boid').primary();
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
             table.string('title');
             table.string('type');
             table.string('itsSyriusBatch');
@@ -20,7 +20,7 @@ exports.up = function (knex, Promise) {
         }),
 
         knex.schema.createTable('InspectionDef', function (table) {
-            table.uuid('boid').primary();
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
             table.string('title');
             table.string('proctype');
             table.string('procedure');
@@ -28,8 +28,8 @@ exports.up = function (knex, Promise) {
         }),
 
         knex.schema.createTable('Monitoring', function (table) {
-            table.uuid('boid').primary();
-            table.uuid('itsTarget')
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
+            table.string('itsTarget')
                 .references('Target.boid');
             table.string('name');
             table.string('description');
@@ -40,10 +40,11 @@ exports.up = function (knex, Promise) {
         }),
 
         knex.schema.createTable('Inspection', function (table) {
-            table.uuid('boid').primary();
-            table.uuid('itsMonitoring')
-                .references('Monitoring.boid');
-            table.uuid('itsInspectionDef')
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
+            table.string('itsMonitoring')
+                .references('Monitoring.boid')
+                .onDelete('CASCADE');
+            table.string('itsInspectionDef')
                 .references('InspectionDef.boid');
             table.float('levelMin');
             table.float('levelMax');
@@ -58,8 +59,8 @@ exports.up = function (knex, Promise) {
         }),
 
         knex.schema.createTable('Run', function (table) {
-            table.uuid('boid').primary();
-            table.uuid('itsMonitoring')
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
+            table.string('itsMonitoring')
                 .references('Monitoring.boid').notNull();
             table.string('itsSyriusBatchlauf');
             table.string('runStatus');
@@ -67,18 +68,19 @@ exports.up = function (knex, Promise) {
             table.dateTime('started').notNull();
             table.dateTime('ended').notNull();
             table.boolean('ignored');
-            table.uuid('ignoredComment')
+            table.string('ignoredComment')
                 .references('Comment.boid');
             table.timestamps(false, true);
         }),
 
         knex.schema.createTable('Value', function (table) {
-            table.uuid('boid').primary();
-            table.uuid('itsRun')
-                .references('Run.boid');
-            table.uuid('itsMonitoring')
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
+            table.string('itsRun')
+                .references('Run.boid')
+                .onDelete('CASCADE');
+            table.string('itsMonitoring')
                 .references('Monitoring.boid');
-            table.uuid('itsInspection')
+            table.string('itsInspection')
                 .references('Inspection.boid');
             table.float('value');
             table.string('status');
@@ -87,14 +89,16 @@ exports.up = function (knex, Promise) {
         }),
 
         knex.schema.createTable('Comment', function (table) {
-            table.uuid('boid').primary();
-            table.uuid('itsUser')
+            table.string('boid').primary().defaultTo(knex.raw('SYS_GUID()'));
+            table.string('itsUser')
                 .references('User.boid');
-            table.uuid('itsMonitoring')
-                .references('Monitoring.boid');
-            table.uuid('itsRun')
-                .references('Run.boid');
-            table.uuid('itsValue')
+            table.string('itsMonitoring')
+                .references('Monitoring.boid')
+                .onDelete('CASCADE');
+            table.string('itsRun')
+                .references('Run.boid')
+                .onDelete('CASCADE');
+            table.string('itsValue')
                 .references('Value.boid');
             table.string('text');
             table.string('oldStatus');
