@@ -138,7 +138,9 @@ module.exports = {
         return knexQuery;
     },
     PUT: function (table, primaryKeyName, params, query, body) {
-
+        return knex(table)
+            .where(primaryKeyName,'=', params[primaryKeyName])
+            .update(body)
     },
     POST: function (table, primaryKeyName, params, query, object) {
 
@@ -160,6 +162,9 @@ module.exports = {
             .delete();
     },
     PATCH: function (table, primaryKeyName, params, query, body) {
+        return knex(table)
+            .where(primaryKeyName,'=', params[primaryKeyName])
+            .update(body);
     },
 };
 

@@ -82,6 +82,7 @@ exports.up = function (knex, Promise) {
                 .references('Inspection.boid');
             table.float('value');
             table.string('status');
+            table.boolean('ignored');
             table.timestamps(false, true);
         }),
 
