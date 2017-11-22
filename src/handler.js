@@ -10,9 +10,7 @@ function addRoute(server, route) {
         });
     }
 
-
     ['GETall', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH'].forEach((methodName) => {
-
         if (route[methodName] !== false) {
             const handler = function (req, res, next) {
 
@@ -21,6 +19,10 @@ function addRoute(server, route) {
                 dbHandler(route.table, route.primaryKey, req.params, req.query, req.body)
                     .then((result) => {
                         if (methodName === 'GETall') {
+                            // add a special header with the total count, if we have a paginated result
+                            if (result.totalCount) {
+                                res.header('X-Symona-Total-Record-Count', result.totalCount);
+                            }
                             // we expect an array of rows, just sending it
                             res.send(result);
                         } else if (methodName === 'DELETE') {
@@ -28,10 +30,10 @@ function addRoute(server, route) {
                             res.send({objectsDeleted: result});
                         } else {
                             if (result.length === 0) {
-                                return next(new errors.NotFoundError("no object found in table '" + route.table+ "' with "
+                                return next(new errors.NotFoundError("no object found in table '" + route.table + "' with "
                                     + route.primaryKey + " = '" + req.params[route.primaryKey] + "'"));
-                            } else if (result.length >1) {
-                                return next(new errors.ConflictError('more than 1 object found ('+ result.length+') with '
+                            } else if (result.length > 1) {
+                                return next(new errors.ConflictError('more than 1 object found (' + result.length + ') with '
                                     + route.primaryKey + " = '" + req.params[route.primaryKey] + "'"));
                             } else {
                                 res.send(result[0]);

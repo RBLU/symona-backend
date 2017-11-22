@@ -21,8 +21,8 @@ const handler = require('./handler');
 const cors = corsMiddleware({
     preflightMaxAge: 5, //Optional
     origins: ['http://localhost:4200', 'https://symona.youpers.com'],
-    allowHeaders: ['API-Token'],
-    exposeHeaders: ['API-Token-Expiry']
+    allowHeaders: ['API-Token', 'X-Symona-Total-Record-Count'],
+    exposeHeaders: ['API-Token-Expiry', 'X-Symona-Total-Record-Count']
 });
 
 const server = restify.createServer({name: 'SYMONA Backend'});

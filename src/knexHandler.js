@@ -12,8 +12,10 @@ const columnInfoCache = {};
 function prefixedColumnsSelector(table, usePrefix) {
 
     if (!columnInfoCache[table]) {
-        pino.debug('************* cache MISS ***********: '+ table);
-        columnInfoCache[table] = knex(table).columnInfo(table).then((res) => {return res;});
+        pino.debug('************* cache MISS ***********: ' + table);
+        columnInfoCache[table] = knex(table).columnInfo(table).then((res) => {
+            return res;
+        });
     }
 
     let prefix = '';
@@ -31,7 +33,7 @@ function prefixedColumnsSelector(table, usePrefix) {
 
 }
 
-function expand(knexQuery, table, attributesToExpand) {
+function expand(knexQuery, table, attributesToExpand, omitColumns) {
     if (!attributesToExpand || attributesToExpand.length === 0) {
         return knexQuery;
     }
@@ -49,13 +51,17 @@ function expand(knexQuery, table, attributesToExpand) {
                 knexQuery
                     .leftJoin(joinTable, table + '.' + itsAttr, joinTable + '.boid')
             });
-            return knexQuery
-                .columns(colSelector)
-                .then((results) => {
-                    const treeized = new Treeize();
-                    treeized.grow(results);
-                    return treeized.getData();
-                });
+            if (omitColumns) {
+                return knexQuery;
+            } else {
+                return knexQuery
+                    .columns(colSelector)
+                    .then((results) => {
+                        const treeized = new Treeize();
+                        treeized.grow(results);
+                        return treeized.getData();
+                    });
+            }
         })
 }
 
@@ -88,7 +94,7 @@ function filter(knexQuery, filterstring) {
         }
         const wrappedColumn = filterParts[0].split('.').map((v) => "\"" + v + "\"").reduce((res, current) => res + '.' + current, '').substr(1);
         if (filterParts[1] === 'likei') {
-            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ",filterArgument)
+            knexQuery.whereRaw("LOWER(" + wrappedColumn + ") LIKE '%' || LOWER(?) || '%' ", filterArgument)
         } else if (filterParts[1] === 'eqi') {
             knexQuery.whereRaw("LOWER(" + wrappedColumn + ") = LOWER(?)", filterArgument)
         } else if (filterParts[1] === 'like') {
@@ -127,6 +133,13 @@ module.exports = {
         let knexQuery = knex(table)
             .select();
 
+        if (query && query.limit) {
+            knexQuery.limit(query.limit);
+        }
+        if (query && query.offset) {
+            knexQuery.offset(query.offset);
+        }
+
         if (query && query.orderBy) {
             knexQuery.orderBy(...query.orderBy.split(QUERY_SEPARATOR));
         }
@@ -139,18 +152,29 @@ module.exports = {
             knexQuery = expand(knexQuery, table, query.expand.split(','));
         }
 
-        if (query && query.limit) {
-            knexQuery.limit(query.limit);
-        }
-        if (query && query.offset) {
-            knexQuery.offset(query.offset);
-        }
 
-        return knexQuery;
+        return knexQuery.then((result) => {
+            // check whether to add a totalCount
+            if (query && (query.limit || query.offset)) {
+                let countQuery = knex(table).count('Run.boid as c');
+                if (query && query.filter) {
+                    countQuery = filter(countQuery, query.filter);
+                }
+                if (query && query.expand) {
+                    countQuery = expand(countQuery, table, query.expand.split(','), true);
+                }
+                return countQuery.then((count) => {
+                    result.totalCount = count[0].c;
+                    return result;
+                })
+            } else {
+                return result;
+            }
+        });
     },
     PUT: function (table, primaryKeyName, params, query, body) {
         return knex(table)
-            .where(primaryKeyName,'=', params[primaryKeyName])
+            .where(primaryKeyName, '=', params[primaryKeyName])
             .update(body)
     },
     POST: function (table, primaryKeyName, params, query, object) {
@@ -174,7 +198,7 @@ module.exports = {
     },
     PATCH: function (table, primaryKeyName, params, query, body) {
         return knex(table)
-            .where(primaryKeyName,'=', params[primaryKeyName])
+            .where(primaryKeyName, '=', params[primaryKeyName])
             .update(body);
     },
 };

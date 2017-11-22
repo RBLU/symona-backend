@@ -246,6 +246,14 @@ describe("knexHandler", function () {
                     .should.eventually.have.length(2);
             });
 
+            it('should limit to 2 results and deliver totalCount', () => {
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {limit: 2})
+                    .then((result) => {
+                        result.should.have.property('totalCount');
+                        result.totalCount.should.equal(4);
+                    });
+            });
+
             it('should skip the first to results', () => {
                 return knexHandler.GETall(tablenameUser, 'boid', {}, {offset: 2, orderBy: 'age'})
                     .then((result) => {
