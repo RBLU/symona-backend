@@ -156,7 +156,7 @@ module.exports = {
         return knexQuery.then((result) => {
             // check whether to add a totalCount
             if (query && (query.limit || query.offset)) {
-                let countQuery = knex(table).count('Run.boid as c');
+                let countQuery = knex(table).count(table + '.boid as c');
                 if (query && query.filter) {
                     countQuery = filter(countQuery, query.filter);
                 }
