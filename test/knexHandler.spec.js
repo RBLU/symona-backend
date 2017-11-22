@@ -9,6 +9,7 @@ const knexHandler = require('../src/knexHandler');
 const knex = require('../src/db');
 const tablenameUser = 'TestUser';
 const tablenameProfile = 'TestProfile';
+const QS = '|';
 
 const uuid = require('uuid/v4');
 
@@ -168,45 +169,45 @@ describe("knexHandler", function () {
             });
 
             it("returns all 3 rows with filter that have pw symona", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'password:eq:symona'}).should.eventually.have.length(3);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'password|eq|symona'}).should.eventually.have.length(3);
             });
 
             it("returns only 1 row with filter that only matches 1", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'username:eq:param'}).should.eventually.have.length(1);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'username|eq|param'}).should.eventually.have.length(1);
             });
 
             it("should handle like query", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email:like:firma.com'}).should.eventually.have.length(3);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email|like|firma.com'}).should.eventually.have.length(3);
             });
 
             it("should handle like query case sensitive", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email:like:Firma.com'}).should.eventually.have.length(0);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email|like|Firma.com'}).should.eventually.have.length(0);
             });
 
             it("should handle like query case insensitive", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email:likei:Firma.com'}).should.eventually.have.length(3);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email|likei|Firma.com'}).should.eventually.have.length(3);
             });
 
             it("should throw a reasonable error on an unknown filter operator", function () {
                 (() => {
-                    knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email:badoperator:Firma.com'})
+                    knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'email|badoperator|Firma.com'})
                 }).should.throw();
             });
 
             it("should handle > query", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'age:>:2'}).should.eventually.have.length(2);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'age|>|2'}).should.eventually.have.length(2);
             });
 
             it("should handle gt query", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'age:gt:2'}).should.eventually.have.length(2);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'age|gt|2'}).should.eventually.have.length(2);
             });
 
             it("should handle gte query", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'age:gte:2'}).should.eventually.have.length(3);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: 'age|gte|2'}).should.eventually.have.length(3);
             });
 
             it("should handle 2 filter conditions as AND", function () {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: ['age:gte:2', 'email:like:firma']}).should.eventually.have.length(2);
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {filter: ['age|gte|2', 'email|like|firma']}).should.eventually.have.length(2);
             });
 
         });
@@ -279,7 +280,7 @@ describe("knexHandler", function () {
                 return knexHandler.GETall(tablenameProfile, 'boid', {}, {
                     expand: 'itsTestUser',
                     orderBy: 'city',
-                    filter: 'age:>:1'
+                    filter: 'age|>|1'
                 })
                     .then((result) => {
                         result.should.have.length(1);
@@ -292,7 +293,7 @@ describe("knexHandler", function () {
 
         describe('combined options', () => {
             it('should handle orderBy and filter at the same time', () => {
-                return knexHandler.GETall(tablenameUser, 'boid', {}, {orderBy: 'age', filter: 'age:>=:2'})
+                return knexHandler.GETall(tablenameUser, 'boid', {}, {orderBy: 'age', filter: 'age|>=|2'})
                     .then((result) => {
                         result.should.have.length(3);
                         result.map((ob) => ob.age).should.have.ordered.members([2, 3, 4]);
@@ -302,7 +303,7 @@ describe("knexHandler", function () {
             it('should handle orderBy, filter, limit and offset at the same time', () => {
                 return knexHandler.GETall(tablenameUser, 'boid', {}, {
                     orderBy: 'age',
-                    filter: 'age:>=:2',
+                    filter: 'age|>=|2',
                     limit: 1,
                     offset: 1
                 }).then((result) => {
