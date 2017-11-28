@@ -1,18 +1,21 @@
-const knex = require('../db');
-const errors = require('restify-errors');
+import * as errors from 'restify-errors';
+import * as restify from 'restify';
 
-module.exports = {
-    table: 'Monitoring',
-    primaryKey: 'boid',
-    specialRoutes: [
-        {
-            method: 'POST',
-            endpoint: '/monitorings/:boid/reloadruns',
-            handler: reloadRunsForMonitoring
-        }]
-};
+import knex from '../db';
+import {Route} from "./Route";
 
-function reloadRunsForMonitoring(req, res, next) {
+export default new Route(
+    'Monitoring',
+    'boid',
+    undefined,
+    [{
+        method: 'POST',
+        endpoint: '/monitorings/:boid/reloadruns',
+        handler: reloadRunsForMonitoring
+    }]
+)
+
+function reloadRunsForMonitoring(req: restify.Request, res: restify.Response, next: restify.Next) {
     knex('Monitoring')
         .select()
         .where({'Monitoring.boid': req.params.boid})
@@ -53,7 +56,7 @@ function reloadRunsForMonitoring(req, res, next) {
                 ])
             ).insert(
                 selectStatement
-            ).then((result) => {
+            ).then((result: any) => {
                 res.send({created: result});
                 return next();
             });

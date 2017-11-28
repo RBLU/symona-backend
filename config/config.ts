@@ -16,7 +16,8 @@
  *  environment config!!!
  */
 
-const nconf = require('nconf');
+import * as nconf from 'nconf';
+
 const env = process.env.NODE_ENV || 'development';
 console.log("NODE_ENV:" + process.env.NODE_ENV + ", using env: " + env);
 
@@ -30,10 +31,10 @@ nconf.overrides({});
 //    the config on real linux pm2 instances is loaded via environment variables in this step
 //    pm2 is started using a processes.json file that configures all needed env variables.
 //
-nconf.env('__');
+nconf.env({});
 
 // 3. `process.argv`
-//     other config could be passed as arguments to the 'node app.js' command line, we do not use this under normal
+//     other config could be passed as arguments to the 'node app.ts' command line, we do not use this under normal
 //     circonstances.
 //
 // commented out, not supported currently
@@ -56,4 +57,4 @@ console.log('reading config from: ' + require('path').normalize(__dirname + '/de
 // will probably not be used, we use the defaults.json file instead.
 nconf.defaults({});
 
-module.exports = nconf.get();
+export default nconf.get();

@@ -1,23 +1,23 @@
-const _ = require('lodash');
+import {Route} from "./routes/Route";
+
 const knexHandler = require('./knexHandler');
 const inflect = require('i')();
-const errors = require('restify-errors');
+import * as restify from 'restify';
+import * as errors from 'restify-errors';
 
-function addRoute(server, route) {
+function addRoute(server: restify.Server, route: Route) {
     if (route.specialRoutes && route.specialRoutes.length > 0) {
         route.specialRoutes.forEach((specialRoute) => {
-            server[methodMap[specialRoute.method]](specialRoute.endpoint, specialRoute.handler);
+            register(server, specialRoute.method, specialRoute.endpoint, specialRoute.handler);
         });
     }
 
-    ['GETall', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH'].forEach((methodName) => {
-        if (route[methodName] !== false) {
-            const handler = function (req, res, next) {
-
-                const dbHandler = _.isFunction(route[methodName]) ? route[methodName] : knexHandler[methodName];
-
+    ['GETall', 'GET', 'PUT', 'POST', 'DELETE', 'PATCH'].forEach((methodName: string) => {
+        if (route.defaultRoutes[methodName] !== false) {
+            const handler = function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                const dbHandler = knexHandler[methodName];
                 dbHandler(route.table, route.primaryKey, req.params, req.query, req.body)
-                    .then((result) => {
+                    .then((result: any) => {
                         if (methodName === 'GETall') {
                             // add a special header with the total count, if we have a paginated result
                             if (result.totalCount) {
@@ -41,7 +41,7 @@ function addRoute(server, route) {
                         }
                         return next();
                     })
-                    .catch((err) => {
+                    .catch((err: any) => {
                         req.log.error(err);
                         // wrap error
 
@@ -57,22 +57,32 @@ function addRoute(server, route) {
                     endpoint += '/:' + route.primaryKey;
                 }
             }
-            console.log('adding route for: ' + endpoint + ', method: ' + methodName);
-            server[methodMap[methodName]](endpoint, handler);
+            register(server, methodName, endpoint, handler);
         }
     });
 }
 
-const methodMap = {
-    GET: 'get',
-    PUT: 'put',
-    GETall: 'get',
-    POST: 'post',
-    DELETE: 'del',
-    PATCH: 'patch'
-};
+function register(server: restify.Server,
+                  method: string,
+                  endpoint: string,
+                  handler: (req: restify.Request, res: restify.Response, next: restify.Next) => void) {
+    console.log('adding route for: ' + endpoint + ', method: ' + method);
+    if (method === 'GET' || method === 'GETall') {
+        server.get(endpoint, handler);
+    } else if (method === 'PUT') {
+        server.put(endpoint, handler);
+    } else if (method === 'DELETE') {
+        server.del(endpoint, handler);
+    } else if (method === 'PUT') {
+        server.put(endpoint, handler);
+    } else if (method === 'POST') {
+        server.post(endpoint, handler);
+    } else if (method === 'PATCH') {
+        server.patch(endpoint, handler);
+    } else {
+        throw new Error('unknown HTTP Verb: ' + method);
+    }
+}
 
 
-module.exports = {
-    addRoute: addRoute
-};
+export {addRoute}

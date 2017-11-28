@@ -1,4 +1,6 @@
-const moment = require('moment');
+import * as moment from 'moment';
+import Knex = require("knex");
+import {Moment} from "moment";
 
 const knex = require('./db');
 const uuidv4 = require('uuid/v4');
@@ -6,14 +8,18 @@ const pino = require('pino')();
 const Treeize = require('treeize');
 
 const QUERY_SEPARATOR = '|';
-const columnInfoCache = {};
+const columnInfoCache:  {[index: string]: Promise<any>} = {};
 
 
-function prefixedColumnsSelector(table, usePrefix) {
+function lowerFirst(str: string) {
+    return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+function prefixedColumnsSelector(table: string, usePrefix=false) {
 
     if (!columnInfoCache[table]) {
         pino.debug('************* cache MISS ***********: ' + table);
-        columnInfoCache[table] = knex(table).columnInfo(table).then((res) => {
+        columnInfoCache[table] = knex(table).columnInfo(table).then((res: any) => {
             return res;
         });
     }
@@ -24,8 +30,8 @@ function prefixedColumnsSelector(table, usePrefix) {
     }
     return columnInfoCache[table]
         .then((result) => {
-            const selector = {};
-            Object.keys(result).forEach((key) => {
+            const selector: {[index: string]: string} = {};
+            Object.keys(result).forEach((key: string) => {
                 selector[prefix + key] = table + '.' + key;
             });
             return selector;
@@ -33,7 +39,7 @@ function prefixedColumnsSelector(table, usePrefix) {
 
 }
 
-function expand(knexQuery, table, attributesToExpand, omitColumns) {
+function expand(knexQuery: any, table: string, attributesToExpand: string[], omitColumns = false) {
     if (!attributesToExpand || attributesToExpand.length === 0) {
         return knexQuery;
     }
@@ -42,8 +48,8 @@ function expand(knexQuery, table, attributesToExpand, omitColumns) {
         .concat(attributesToExpand.map((itsAttr) => {
             return prefixedColumnsSelector(itsAttr.substr(3), true)
         })))
-        .then((columns) => {
-            const colSelector = Object.assign(...columns);
+        .then((columns: any) => {
+            const colSelector = Object.assign(columns[0], ...columns.slice(1));
             pino.debug('colSelector', colSelector);
 
             attributesToExpand.forEach((itsAttr) => {
@@ -56,7 +62,7 @@ function expand(knexQuery, table, attributesToExpand, omitColumns) {
             } else {
                 return knexQuery
                     .columns(colSelector)
-                    .then((results) => {
+                    .then((results: any) => {
                         const treeized = new Treeize();
                         treeized.grow(results);
                         return treeized.getData();
@@ -65,9 +71,9 @@ function expand(knexQuery, table, attributesToExpand, omitColumns) {
         })
 }
 
-function filter(knexQuery, filterstring) {
+function filter(knexQuery: any, filterstring: string) {
 
-    const opMap = {
+    const opMap: {[index: string]: string}= {
         eq: '=',
         gt: '>',
         gte: '>=',
@@ -106,7 +112,7 @@ function filter(knexQuery, filterstring) {
     return knexQuery;
 }
 
-function reviveFilterArgument(value) {
+function reviveFilterArgument(value: string): Date| string {
     if (moment(value, moment.ISO_8601).isValid()) {
         return moment(value).toDate();
     } else {
@@ -114,9 +120,17 @@ function reviveFilterArgument(value) {
     }
 }
 
-module.exports = {
+export type DbHandler = (
+    table: string,
+    primaryKeyName: string,
+    params: {[index: string]: string},
+    query: {[index: string]: string},
+    body?: any
+) => Knex;
+
+const dbHandlers: {[index: string]: DbHandler} = {
     GET: function (table, primaryKeyName, params, query, body) {
-        const clause = {};
+        const clause: {[index: string]: string} = {};
         clause[table + '.' + primaryKeyName] = params[primaryKeyName];
 
         const knexQuery = knex(table)
@@ -153,7 +167,7 @@ module.exports = {
         }
 
 
-        return knexQuery.then((result) => {
+        return knexQuery.then((result: any) => {
             // check whether to add a totalCount
             if (query && (query.limit || query.offset)) {
                 let countQuery = knex(table).count(table + '.boid as c');
@@ -163,7 +177,7 @@ module.exports = {
                 if (query && query.expand) {
                     countQuery = expand(countQuery, table, query.expand.split(','), true);
                 }
-                return countQuery.then((count) => {
+                return countQuery.then((count: any) => {
                     result.totalCount = count[0].c;
                     return result;
                 })
@@ -184,12 +198,12 @@ module.exports = {
         pino.info(object);
         return knex(table)
             .insert(object)
-            .then((result) => {
+            .then((result: any) => {
                 return [object];
             });
     },
     DELETE: function (table, primaryKeyName, params, query, body) {
-        const clause = {};
+        const clause : {[index: string]: string} = {};
         clause[primaryKeyName] = params[primaryKeyName];
 
         return knex(table)
@@ -203,7 +217,5 @@ module.exports = {
     },
 };
 
+export default dbHandlers;
 
-function lowerFirst(string) {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-}
