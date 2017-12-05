@@ -29,7 +29,6 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-      - run: echo 'export LD_LIBRARY_PATH=/home/circleci/repo/.oracle/instantclient:$LD_LIBRARY_PATH' >> $BASH_ENV
       - run: npm install
 
       - save_cache:
