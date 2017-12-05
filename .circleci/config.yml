@@ -8,12 +8,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8.9.1
-        environment:
-          OCI_HOME: /home/circleci/repo/.oracle/instantclient
-          OCI_LIB_DIR: /home/circleci/repo/.oracle/instantclient
-          OCI_INC_DIR: /home/circleci/repo/.oracle/instantclient/sdk/include
-          OCI_INCLUDE_DIR: /home/circleci/repo/.oracle/instantclient/sdk/include
+      - image: retoblunschi/nodeoracledb:1.0
       - image: wnameless/oracle-xe-11g
 
 
@@ -35,16 +30,11 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
       - run: echo 'export LD_LIBRARY_PATH=/home/circleci/repo/.oracle/instantclient:$LD_LIBRARY_PATH' >> $BASH_ENV
-      - run:
-          command: scripts/node-oracledb-prepare.sh
-      - run:
-          command: sudo apt-get install libaio1
       - run: npm install
 
       - save_cache:
           paths:
             - node_modules
-            - .oracle
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
