@@ -15,7 +15,8 @@ const uuid = require('uuid/v4');
 
 describe("knexHandler", function () {
 
-    before(() => {
+    before(function() {
+        this.timeout(5000);
         return Promise.all([
             knex.schema.createTableIfNotExists(tablenameUser, function (table) {
                 table.uuid('boid').primary();
