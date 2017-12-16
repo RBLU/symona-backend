@@ -104,7 +104,26 @@ exports.up = function (knex, Promise) {
             table.string('oldStatus');
             table.string('newStatus');
             table.timestamps(false, true);
-        })
+        }),
+
+
+        knex.raw('CREATE OR REPLACE PROCEDURE ID_LAUFZEIT (inspection IN varchar, run IN varchar,\n' +
+            '                                           monitoring in VARCHAR, syrBatchlauf in varchar) as\n' +
+            '  BEGIN\n' +
+            '    INSERT INTO "Value"\n' +
+            '      SELECT SYS_GUID(), run, monitoring, inspection, bl.STOPPED - bl.STARTED, \'open\', 0, SYSDATE(), SYSDATE()\n' +
+            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf;\n' +
+            '  END;\n' +
+            ' /'),
+
+        knex.raw('CREATE OR REPLACE PROCEDURE ID_WORKITEMS (inspection IN varchar, run IN varchar,\n' +
+            '                               monitoring in VARCHAR, syrBatchlauf in varchar) as\n' +
+            '  BEGIN\n' +
+            '    INSERT INTO "Value"\n' +
+            '      SELECT SYS_GUID(), run, monitoring, inspection,  bl.NUMBEROFWORKITEMS, \'open\', 0, SYSDATE(), SYSDATE()\n' +
+            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf;\n' +
+            '  END;\n' +
+            '/')
     ])
 };
 

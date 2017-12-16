@@ -3,6 +3,14 @@ module.exports = {
     development: {
         client: 'oracledb',
         connection: {
+            user          : "system",
+            password      : "oracle",
+            connectString : "localhost:49161/XE"
+        }
+    },
+    integration: {
+        client: 'oracledb',
+        connection: {
             user          : "syba",
             password      : "syba",
             connectString : '10.1.1.183/XE'

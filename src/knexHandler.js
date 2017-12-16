@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const knex = require('./db');
+const knex = require('./db').getDb();
 const uuidv4 = require('uuid/v4');
 const pino = require('pino')();
 const Treeize = require('treeize');

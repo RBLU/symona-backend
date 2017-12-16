@@ -5,14 +5,16 @@ exports.seed = function (knex, Promise) {
             // Inserts seed entries
             return knex('InspectionDef').insert([
                 {
+                    "boid": "aaa83add-9e46-43e0-836d-c958866740aa",
                     "title": "Laufzeit",
                     "proctype": "sqlproc",
-                    "procedure": "KZLAUFZEIT"
+                    "procedure": "ID_LAUFZEIT"
                 },
                 {
+                    "boid": "bba83add-9e46-43e0-836d-c958866740aa",
                     "title": "Anzahl Workitems",
                     "proctype": "sqlproc",
-                    "procedure": "KZWORKITEMS"
+                    "procedure": "ID_WORKITEMS"
                 }
             ]);
         });

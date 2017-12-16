@@ -7,10 +7,12 @@ const moment = require('moment');
 
 const config = require('../config/config');
 config.appRoot = __dirname; // required config
-const db = require('./db');
 
-db.migrate.latest([config]);
+const dbconfigs = require('../knexfile.js');
+const env = process.env.NODE_ENV || 'development';
+console.log('Using NODE_ENV: ' + env + ', knex-Config: ' + JSON.stringify(dbconfigs[env]));
 
+const db = require('./db').getDb(dbconfigs[env]);
 
 const auth = require('./auth').handlers(config);
 auth.setupPassport(passport);
@@ -34,7 +36,7 @@ server.use(pino);
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser({mapParams: false}));
 
-function reviveDates(key, value){
+function reviveDates(key, value) {
     if (moment(value, moment.ISO_8601).isValid()) {
         return moment(value).toDate();
     } else {
