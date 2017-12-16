@@ -111,7 +111,7 @@ exports.up = function (knex, Promise) {
             '                                           monitoring in VARCHAR, syrBatchlauf in varchar) as\n' +
             '  BEGIN\n' +
             '    INSERT INTO "Value"\n' +
-            '      SELECT SYS_GUID(), run, monitoring, inspection, bl.STOPPED - bl.STARTED, \'open\', 0, SYSDATE(), SYSDATE()\n' +
+            '      SELECT SYS_GUID(), run, monitoring, inspection, (bl.STOPPED - bl.STARTED) *24 *3600, \'open\', 0, SYSDATE(), SYSDATE()\n' +
             '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf;\n' +
             '  END;\n' +
             ' /'),
