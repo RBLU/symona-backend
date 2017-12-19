@@ -6,7 +6,11 @@ chai.use(chaiAsPromised);
 chai.should();
 
 const knexHandler = require('../src/knexHandler');
-const knex = require('../src/db');
+const dbconfigs = require('../knexfile.js');
+const env = process.env.NODE_ENV || 'development';
+console.log('Using NODE_ENV: ' + env + ', knex-Config: ' + JSON.stringify(dbconfigs[env]));
+
+const knex = require('../src/db').getDb(dbconfigs[env]);
 const tablenameUser = 'TestUser';
 const tablenameProfile = 'TestProfile';
 const QS = '|';

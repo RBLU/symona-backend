@@ -4,7 +4,7 @@
   "description": "SYSYIS Monitoring Application for Business Users",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=development mocha test --recursive -w  --color --reporter spec |pino",
+    "test": "NODE_ENV=integration mocha test --recursive -w  --color --reporter spec |pino",
     "citest": "NODE_ENV=ci mocha test --recursive  --color --reporter spec",
     "start": "NODE_ENV=integration knex migrate:latest && NODE_ENV=integration nodemon -w src/ src/app.js |pino",
     "debug": "DEBUG=knex:* NODE_ENV=integration knex migrate:latest && DEBUG=knex:* NODE_ENV=integration nodemon -w src/ src/app.js |pino"

@@ -59,6 +59,7 @@ handler.addRoute(server, require('./routes/target'));
 handler.addRoute(server, require('./routes/inspectiondef'));
 handler.addRoute(server, require('./routes/inspection'));
 handler.addRoute(server, require('./routes/run'));
+handler.addRoute(server, require('./routes/value'));
 
 server.listen(8080, function () {
     console.log('%s listening at %s', server.name, server.url);
