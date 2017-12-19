@@ -64,7 +64,7 @@ module.exports = {
                 knex('Value')
                     .where('itsInspection', req.params.boid)
                     .select(
-                        knex.raw('AVG("value") as average'),
+                        knex.raw('ROUND(AVG("value")) as average'),
                         knex.raw('MEDIAN("value") as median'),
                         knex.raw('MIN("value") as min'),
                         knex.raw('MAX("value") as max'),
@@ -76,7 +76,7 @@ module.exports = {
                         knex.raw('PERCENTILE_DISC(.7) WITHIN GROUP (ORDER BY "value") as percentile70'),
                         knex.raw('PERCENTILE_DISC(.6) WITHIN GROUP (ORDER BY "value") as percentile60'))
                     .then((result) => {
-                        res.send(result);
+                        res.send(result[0]);
                         return next();
                     })
                     .catch((err) => {
