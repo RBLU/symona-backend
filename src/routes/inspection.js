@@ -62,8 +62,14 @@ module.exports = {
                     return next(new Error('Bad Parameter'));
                 }
                 knex('Value')
+                    .innerJoin('Inspection', 'Value.itsInspection', 'Inspection.boid')
                     .where('itsInspection', req.params.boid)
-                    .select(
+                    .select('Inspection.levelMin',
+                            'Inspection.levelMax',
+                            'Inspection.levelLowError',
+                            'Inspection.levelLowWarning',
+                            'Inspection.levelHighWarning',
+                            'Inspection.levelHighError',
                         knex.raw('ROUND(AVG("value")) as average'),
                         knex.raw('ROUND(MEDIAN("value")) as median'),
                         knex.raw('ROUND(MIN("value")) as min'),
@@ -75,6 +81,12 @@ module.exports = {
                         knex.raw('PERCENTILE_DISC(.8) WITHIN GROUP (ORDER BY "value") as percentile80'),
                         knex.raw('PERCENTILE_DISC(.7) WITHIN GROUP (ORDER BY "value") as percentile70'),
                         knex.raw('PERCENTILE_DISC(.6) WITHIN GROUP (ORDER BY "value") as percentile60'))
+                    .groupBy('Inspection.levelMin',
+                        'Inspection.levelMax',
+                        'Inspection.levelLowError',
+                        'Inspection.levelLowWarning',
+                        'Inspection.levelHighWarning',
+                        'Inspection.levelHighError')
                     .then((result) => {
                         res.send(result[0]);
                         return next();
