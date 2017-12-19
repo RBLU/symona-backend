@@ -65,11 +65,11 @@ module.exports = {
                     .where('itsInspection', req.params.boid)
                     .select(
                         knex.raw('ROUND(AVG("value")) as average'),
-                        knex.raw('MEDIAN("value") as median'),
-                        knex.raw('MIN("value") as min'),
-                        knex.raw('MAX("value") as max'),
+                        knex.raw('ROUND(MEDIAN("value")) as median'),
+                        knex.raw('ROUND(MIN("value")) as min'),
+                        knex.raw('ROUND(MAX("value")) as max'),
                         knex.raw('COUNT("value") as count'),
-                        knex.raw('STDDEV("value") as stddev'),
+                        knex.raw('ROUND(STDDEV("value")) as stddev'),
                         knex.raw('PERCENTILE_DISC(.95) WITHIN GROUP (ORDER BY "value") as percentile95'),
                         knex.raw('PERCENTILE_DISC(.9) WITHIN GROUP (ORDER BY "value") as percentile90'),
                         knex.raw('PERCENTILE_DISC(.8) WITHIN GROUP (ORDER BY "value") as percentile80'),
@@ -84,6 +84,40 @@ module.exports = {
                         return next(err);
                     });
             }
-        }
+        }, {
+            method: 'GET',
+            endpoint: '/inspections/:boid/values',
+            handler: (req, res, next) => {
+                req.log.trace(req.params, 'req.params');
+                if (!req.params.boid) {
+                    return next(new Error('Bad Parameter'));
+                }
+                knex('Value')
+                    .innerJoin('Run', 'Value.itsRun', 'Run.boid')
+                    .where('itsInspection', req.params.boid)
+                    .select(
+                        'Value.boid as boid',
+                        'Value.status as status',
+                        'Value.ignored as ignored',
+                        'Value.value as value',
+                        'Run.started as started',
+                        'Run.boid as runBoid',
+                        'Run.runStatus as runStatus',
+                        'Run.operatorStatus as operatorStatus',
+                        'Run.ignoredComment as ignoreComment')
+                    .orderBy('Run.started')
+                    .then((result) => {
+                        res.send(result);
+                        return next();
+                    })
+                    .catch((err) => {
+                        req.log.error(err);
+                        return next(err);
+                    });
+
+            }
+        },
+
+
     ]
 };

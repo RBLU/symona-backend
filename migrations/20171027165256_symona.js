@@ -68,7 +68,7 @@ exports.up = function (knex, Promise) {
             table.dateTime('started').notNull();
             table.dateTime('ended').notNull();
             table.boolean('ignored');
-            table.string('ignoredComment')
+            table.string('itsIgnoredComment')
                 .references('Comment.boid');
             table.timestamps(false, true);
         }),
