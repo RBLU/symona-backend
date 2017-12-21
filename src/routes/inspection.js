@@ -70,6 +70,7 @@ module.exports = {
                             'Inspection.levelLowWarning',
                             'Inspection.levelHighWarning',
                             'Inspection.levelHighError',
+                            'Inspection.name',
                         knex.raw('ROUND(AVG("value")) as average'),
                         knex.raw('ROUND(MEDIAN("value")) as median'),
                         knex.raw('ROUND(MIN("value")) as min'),
@@ -86,7 +87,8 @@ module.exports = {
                         'Inspection.levelLowError',
                         'Inspection.levelLowWarning',
                         'Inspection.levelHighWarning',
-                        'Inspection.levelHighError')
+                        'Inspection.levelHighError',
+                        'Inspection.name')
                     .then((result) => {
                         res.send(result[0]);
                         return next();
