@@ -50,6 +50,20 @@ server.on('uncaughtException', function (req, res, err, cb) {
     return cb();
 });
 
+
+const serverShutDown = () => {
+    db.destroy(() => {
+        console.log('shutting down db-connection-pool.... DONE');
+        console.log('Try to shutdown HTTP server...');
+        server.close(() => {
+            console.log('HTTP server is successfully shutdown.');
+        });
+    });
+
+};
+
+process.on('SIGINT', serverShutDown);
+
 server.use(restify.plugins.bodyParser({mapParams: false, reviver: reviveDates}));
 server.use(passport.initialize());
 
