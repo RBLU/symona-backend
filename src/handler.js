@@ -28,7 +28,7 @@ function addRoute(server, route) {
                         } else if (methodName === 'DELETE') {
                             // we expect an integer, the number of objects deleted
                             res.send({objectsDeleted: result});
-                        } else {
+                        } else {  // GET, PUT, POST, PATCH: we expect an Array with exactly one object as the result
                             if (result.length === 0) {
                                 return next(new errors.NotFoundError("no object found in table '" + route.table + "' with "
                                     + route.primaryKey + " = '" + req.params[route.primaryKey] + "'"));

@@ -52,12 +52,10 @@ server.on('uncaughtException', function (req, res, err, cb) {
 
 
 const serverShutDown = () => {
-    db.destroy(() => {
-        console.log('shutting down db-connection-pool.... DONE');
-        console.log('Try to shutdown HTTP server...');
-        server.close(() => {
-            console.log('HTTP server is successfully shutdown.');
-        });
+
+    console.log('Try to shutdown HTTP server...');
+    server.close(() => {
+        console.log('HTTP server is successfully shutdown.');
     });
 
 };
