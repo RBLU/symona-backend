@@ -112,7 +112,7 @@ exports.up = function (knex, Promise) {
             '  BEGIN\n' +
             '    INSERT INTO SYMONA."Value"\n' +
             '      SELECT SYS_GUID(), run, monitoring, inspection, (bl.STOPPED - bl.STARTED) *24 *3600, \'open\', 0, SYSDATE, SYSDATE\n' +
-            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf;\n' +
+            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf and bl.replaced = to_date(\'01013000\', \'ddmmyyyy\');\n' +
             '  END;\n' +
             ' /'),
 
@@ -121,7 +121,7 @@ exports.up = function (knex, Promise) {
             '  BEGIN\n' +
             '    INSERT INTO SYMONA."Value"\n' +
             '      SELECT SYS_GUID(), run, monitoring, inspection,  bl.NUMBEROFWORKITEMS, \'open\', 0, SYSDATE, SYSDATE\n' +
-            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf;\n' +
+            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf and bl.replaced = to_date(\'01013000\', \'ddmmyyyy\');\n' +
             '  END;\n' +
             '/')
     ])
