@@ -118,7 +118,7 @@ module.exports = {
                         'Run.boid as runBoid',
                         'Run.runStatus as runStatus',
                         'Run.operatorStatus as operatorStatus',
-                        'Run.ignoredComment as ignoreComment')
+                        'Run.itsIgnoredComment as itsIgnoredComment')
                     .orderBy('Run.started')
                     .then((result) => {
                         res.send(result);
