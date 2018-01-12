@@ -1,9 +1,6 @@
-const moment = require('moment');
-
 const knex = require('./db').getDb();
 const uuidv4 = require('uuid/v4');
 const pino = require('pino')();
-const Treeize = require('treeize');
 const knexHelper = require('./knexHelper');
 const QUERY_SEPARATOR = knexHelper.QUERY_SEPARATOR;
 
@@ -44,7 +41,6 @@ module.exports = {
         if (query && query.expand) {
             knexQuery = knexHelper.expand(knexQuery, table, query.expand.split(','));
         }
-
 
         return knexQuery.then((result) => {
             // check whether to add a totalCount
