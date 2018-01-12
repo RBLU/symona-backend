@@ -111,8 +111,11 @@ exports.up = function (knex, Promise) {
             '                                           monitoring in VARCHAR, syrBatchlauf in varchar) as\n' +
             '  BEGIN\n' +
             '    INSERT INTO SYMONA."Value"\n' +
-            '      SELECT SYS_GUID(), run, monitoring, inspection, (bl.STOPPED - bl.STARTED) *24 *3600, \'open\', 0, SYSDATE, SYSDATE\n' +
-            '      FROM SYRIUSADM.BATCHLAUF bl where bl.BOID = syrBatchlauf and bl.replaced = to_date(\'01013000\', \'ddmmyyyy\');\n' +
+            '      SELECT SYS_GUID(), run, monitoring, inspection, duration, \'open\', 0, SYSDATE, SYSDATE\n' +
+            '      FROM (SELECT bl.BOID, extract(day from (Max(bl.CREATED) - MIN(bl.created)) *86400) as duration\n' +
+            '            FROM SYRIUSADM.BATCHLAUF bl\n' +
+            '            where bl.BOID = syrBatchLauf\n' +
+            '            group by bl.BOID);' +
             '  END;\n' +
             ' /'),
 

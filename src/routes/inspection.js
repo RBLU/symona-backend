@@ -64,6 +64,7 @@ module.exports = {
                 knex('Value')
                     .innerJoin('Inspection', 'Value.itsInspection', 'Inspection.boid')
                     .where('itsInspection', req.params.boid)
+                    .where('Value.ignored','<>', 1)
                     .select('Inspection.levelMin',
                             'Inspection.levelMax',
                             'Inspection.levelLowError',
@@ -109,6 +110,7 @@ module.exports = {
                 knex('Value')
                     .innerJoin('Run', 'Value.itsRun', 'Run.boid')
                     .where('itsInspection', req.params.boid)
+                    .where('Value.ignored', '<>', 1)
                     .select(
                         'Value.boid as boid',
                         'Value.status as status',
