@@ -8,13 +8,15 @@ exports.seed = function (knex, Promise) {
                     "boid": "aaa83add-9e46-43e0-836d-c958866740aa",
                     "title": "Laufzeit",
                     "proctype": "sqlproc",
-                    "procedure": "ID_LAUFZEIT"
+                    "procedure": "ID_LAUFZEIT",
+                    "valueFormat": "duration"
                 },
                 {
                     "boid": "bba83add-9e46-43e0-836d-c958866740aa",
                     "title": "Anzahl Workitems",
                     "proctype": "sqlproc",
-                    "procedure": "ID_WORKITEMS"
+                    "procedure": "ID_WORKITEMS",
+                    "valueFormat": "number"
                 }
             ]);
         });

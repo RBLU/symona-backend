@@ -24,6 +24,7 @@ exports.up = function (knex, Promise) {
             table.string('title');
             table.string('proctype');
             table.string('procedure');
+            table.string('valueFormat');
             table.timestamps(false, true);
         }),
 

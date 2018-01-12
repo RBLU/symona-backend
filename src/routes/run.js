@@ -1,5 +1,6 @@
 const knex = require('../db').getDb();
 const errors = require('restify-errors');
+const knexHelper = require('../knexHelper');
 
 const ignoreHandler = (doIgnore) => {
     return (req, res, next) => {
@@ -51,12 +52,17 @@ module.exports = {
             endpoint: '/runs/:boid/inspections',
             handler: (req, res, next) => {
                 req.log.info(req.query, 'req.query');
-                knex('Inspection')
+                let table = 'Inspection';
+                let q = knex(table)
                     .join('Run', 'Run.itsMonitoring', '=', 'Inspection.itsMonitoring')
                     .join('Value', 'Value.itsInspection', '=', 'Inspection.boid')
                     .select('Inspection.*', 'Value.value', 'Value.status', 'Value.ignored', 'Run.boid as itsRun')
                     .where('Value.itsRun', '=', req.params.boid)
-                    .where('Run.boid', '=', req.params.boid)
+                    .where('Run.boid', '=', req.params.boid);
+                if (req.query.expand) {
+                    q = knexHelper.expand(q, table, req.query.expand.split(','));
+                }
+                return q
                     .then((rows) => {
                         res.send(rows);
                         return next();
