@@ -1,6 +1,7 @@
 const pino = require('pino')();
 const Treeize = require('treeize');
 const knex = require('./db').getDb();
+const moment = require('moment');
 
 
 const QUERY_SEPARATOR = '|';
