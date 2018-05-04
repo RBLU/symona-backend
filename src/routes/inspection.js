@@ -34,7 +34,8 @@ module.exports = {
                                 req.log.info(row, 'the Row');
                                 return knex.raw(
                                     "BEGIN " + row.procedure + "(?,?,?,?); END;",
-                                    [{"dir": oracledb.BIND_IN, "type": oracledb.STRING, "val": row.inspBoid},
+                                    [
+                                        {"dir": oracledb.BIND_IN, "type": oracledb.STRING, "val": row.inspBoid},
                                         {"dir": oracledb.BIND_IN, "type": oracledb.STRING, "val": row.runBoid},
                                         {"dir": oracledb.BIND_IN, "type": oracledb.STRING, "val": row.monitoringBoid},
                                         {"dir": oracledb.BIND_IN, "type": oracledb.STRING, "val": row.syrBatchlauf}
@@ -51,7 +52,6 @@ module.exports = {
                         return next(err);
                     });
             },
-
         },
         {
             method: 'GET',

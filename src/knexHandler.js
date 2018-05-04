@@ -47,7 +47,7 @@ module.exports = {
             if (query && (query.limit || query.offset)) {
                 let countQuery = knex(table).count(table + '.boid as c');
                 if (query && query.filter) {
-                    countQuery = filter(countQuery, query.filter);
+                    countQuery = knexHelper.filter(countQuery, query.filter);
                 }
                 if (query && query.expand) {
                     countQuery = knexHelper.expand(countQuery, table, query.expand.split(','), true);

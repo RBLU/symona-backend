@@ -23,29 +23,29 @@
   },
   "homepage": "https://github.com/RBLU/symona-backend#readme",
   "dependencies": {
-    "bcrypt": "^1.0.3",
-    "dotenv": "^4.0.0",
+    "bcrypt": "^2.0.1",
+    "dotenv": "^5.0.1",
     "i": "^0.3.6",
     "jwt-simple": "^0.5.1",
-    "knex": "^0.14.2",
-    "moment": "^2.19.3",
+    "knex": "^0.14.6",
+    "moment": "^2.22.1",
     "nconf": "^0.10.0",
-    "nodemon": "^1.12.5",
-    "oracledb": "^2.0.15",
+    "nodemon": "^1.17.3",
+    "oracledb": "^2.2.0",
     "passport": "^0.4.0",
     "passport-http": "^0.3.0",
     "passport-http-bearer": "^1.0.1",
-    "pino": "^4.10.2",
-    "restify": "^6.3.4",
-    "restify-cors-middleware": "^1.0.1",
-    "restify-errors": "^5.0.0",
+    "pino": "^4.16.1",
+    "restify": "^7.1.1",
+    "restify-cors-middleware": "^1.1.0",
+    "restify-errors": "^6.0.0",
     "restify-pino-logger": "^2.0.0",
     "treeize": "^2.1.2",
-    "uuid": "^3.1.0"
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^4.0.1"
+    "mocha": "^5.1.1"
   }
 }
